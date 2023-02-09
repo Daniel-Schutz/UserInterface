@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import image from "./doc_exemplo.png";
 
 function App() {
@@ -8,6 +8,35 @@ function App() {
   const [isMouseOverConfirmButton, setIsMouseOverConfirmButton] = useState(
     false
   );
+  const [blocks, setBlocks] = useState([]);
+  const [filteredText, setFilteredText] = useState([]);
+
+  useEffect(() => {
+    fetch("./pg1_mock_data.json")
+      .then((res) => res.json())
+      .then((json) => {
+        setBlocks(json.blocks);
+        console.log("teste");
+      });
+  }, []);
+
+  const filterText = (firstCoordinatePair, secondCoordinatePair) => {
+    let filtered = [];
+    blocks.forEach((block) => {
+      let start = block.start;
+      let end = block.end;
+      if (
+        start[0] >= firstCoordinatePair[0] &&
+        start[1] >= firstCoordinatePair[1] &&
+        end[0] <= secondCoordinatePair[0] &&
+        end[1] <= secondCoordinatePair[1]
+      ) {
+        filtered.push(block.text);
+        console.log(filtered);
+      }
+    });
+    setFilteredText(filtered);
+  };
 
   const handleSelect = () => {
     setShowRect(false);
@@ -55,6 +84,14 @@ function App() {
         800
       ).toFixed(14)}]`
     );
+    filterText(
+      [(rect.x / 600).toFixed(14), (rect.y / 800).toFixed(14)],
+      [
+        ((rect.x + rect.width) / 600).toFixed(14),
+        ((rect.y + rect.height) / 800).toFixed(14)
+      ]
+    );
+    console.log(filteredText[1]);
     setShowRect(false);
     setShowConfirm(false);
   };
@@ -101,6 +138,9 @@ function App() {
           Confirm
         </button>
       )}
+      {filteredText.map((text, index) => (
+        <p key={index}>{text}</p>
+      ))}
     </div>
   );
 }
