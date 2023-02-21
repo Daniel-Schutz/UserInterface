@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "/src/box.js";
 import Rectangle from "/src/rectangle.js";
+import image from "./Slip1.jpg";
 
 /*const backgroundImages = [
   //here we will use the document images
@@ -10,8 +11,8 @@ const App = () => {
   const [index, setIndex] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
   const boxes = [
-    { x: 50, y: 250, width: 200, height: 100 },
-    { x: 50, y: 400, width: 200, height: 100 }
+    { x: 10, y: 250, width: 200, height: 100 },
+    { x: 10, y: 400, width: 200, height: 100 }
   ];
 
   /* here we are going to create a function to change the image using the
@@ -50,7 +51,14 @@ const App = () => {
   };
 
   return (
-    <div /*className="app" style={{ backgroundImage: `url(${backgroundImage})` }}*/
+    <div
+      style={{
+        position: "relative",
+        backgroundImage: `url(${image})`,
+        backgroundSize: "cover",
+        width: 600,
+        height: 800
+      }}
     >
       <Box x={x} y={y} width={width} height={height} />
       <Rectangle
