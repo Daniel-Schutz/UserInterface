@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import image from "./doc_exemplo.png";
+import image from "./Slip1.jpg";
 
 function App() {
   const [rect, setRect] = useState({ x: 0, y: 0, width: 0, height: 0 });
@@ -16,12 +16,12 @@ function App() {
       .then((res) => res.json())
       .then((json) => {
         setBlocks(json.blocks);
-        console.log("teste");
       });
   }, []);
 
   const filterText = (firstCoordinatePair, secondCoordinatePair) => {
     let filtered = [];
+    let excerpt = [];
     blocks.forEach((block) => {
       let start = block.start;
       let end = block.end;
@@ -32,10 +32,11 @@ function App() {
         end[1] <= secondCoordinatePair[1]
       ) {
         filtered.push(block.text);
-        console.log(filtered);
+        excerpt.push(block.Id);
       }
     });
     setFilteredText(filtered);
+    console.log(`Text: ${filtered.join(" ")}\n\n Excercpt: ${excerpt}`);
   };
 
   const handleSelect = () => {
@@ -91,7 +92,6 @@ function App() {
         ((rect.y + rect.height) / 800).toFixed(14)
       ]
     );
-    console.log(filteredText[1]);
     setShowRect(false);
     setShowConfirm(false);
   };
@@ -103,11 +103,12 @@ function App() {
       onMouseUp={handleMouseUp}
       style={{
         position: "relative",
-        height: "100vh",
         backgroundImage: `url(${image})`,
         backgroundSize: "cover",
         width: 600,
-        height: 800
+        height: 800,
+        margin: 0,
+        padding: 0
       }}
     >
       <button onClick={handleSelect}>Select</button>
@@ -119,8 +120,9 @@ function App() {
             top: rect.y,
             width: rect.width,
             height: rect.height,
-            border: "2px solid yellow",
-            opacity: 0.5
+            border: "2px solid #ffb515",
+            opacity: 0.5,
+            backgroundColor: "yellow"
           }}
         ></div>
       )}
@@ -138,9 +140,6 @@ function App() {
           Confirm
         </button>
       )}
-      {filteredText.map((text, index) => (
-        <p key={index}>{text}</p>
-      ))}
     </div>
   );
 }
