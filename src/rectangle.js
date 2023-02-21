@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const Rectangle = ({
   x,
@@ -21,18 +21,20 @@ const Rectangle = ({
     display: "flex",
     flexDirection: "column"
   };
-  const [showEditArea, setShowEditArea] = useState(false);
-  const [text, setText] = useState("");
-
-  const handleEditButtonClick = () => {
-    setShowEditArea(true);
-  };
-
-  const handleConfirmButtonClick = () => {
-    setShowEditArea(false);
-  };
 
   const [showDescription, setShowDescription] = useState(false);
+  //codigo
+  const [isHidden, setIsHidden] = useState(false);
+
+  const handleHideButtonClick = () => {
+    setIsHidden(true);
+  };
+
+  if (isHidden) {
+    return null;
+  }
+
+  //codigo
 
   const handleHelpButtonHover = () => {
     setShowDescription(true);
@@ -64,16 +66,9 @@ const Rectangle = ({
           checked={isChecked}
         />
         <label>Validate or </label>
-        <button onClick={handleEditButtonClick}>Edit</button>
+        <button onClick={handleHideButtonClick}>Select</button>
       </div>
-      {showEditArea && (
-        <div className="edit-area">
-          <textarea value={text} onChange={(e) => setText(e.target.value)} />
-          <div className="bottom-buttons-container">
-            <button onClick={handleConfirmButtonClick}>Confirm</button>
-          </div>
-        </div>
-      )}
+
       <div className="bottom-buttons-container">
         <button onClick={onReturnClick}>Return</button>
         <button onClick={onNextClick}>Next</button>
