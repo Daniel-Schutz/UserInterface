@@ -12,7 +12,11 @@ const App = () => {
   const [isChecked, setIsChecked] = useState(false);
   const boxes = [
     { x: 10, y: 250, width: 200, height: 100 },
-    { x: 10, y: 400, width: 200, height: 100 }
+    { x: 10, y: 400, width: 200, height: 100 },
+    { x: 10, y: 250, width: 200, height: 100 },
+    { x: 10, y: 250, width: 200, height: 100 },
+    { x: 10, y: 250, width: 200, height: 100 },
+    { x: 10, y: 250, width: 200, height: 100 }
   ];
 
   /* here we are going to create a function to change the image using the
@@ -27,6 +31,17 @@ const App = () => {
     setBackgroundImage(nextImage);
   };*/
 
+  const [words, setWords] = useState([]);
+  useEffect(() => {
+    fetch("./pg1_mock_data.json")
+      .then((response) => response.json())
+      .then((data) => setWords(data.extraction))
+      .catch((error) => console.error(error));
+  }, []);
+
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const currentWord = words[currentWordIndex].target_name;
+
   const currentBox = boxes[index];
   const x = currentBox.x;
   const y = currentBox.y;
@@ -34,8 +49,9 @@ const App = () => {
   const height = currentBox.height;
 
   const handleNextClick = () => {
-    if (isChecked && index < boxes.length - 1) {
+    if (isChecked && currentWordIndex < words.length - 1) {
       setIndex(index + 1);
+      setCurrentWordIndex(currentWordIndex + 1);
       setIsChecked(false);
     }
   };
@@ -43,6 +59,7 @@ const App = () => {
   const handleReturnClick = () => {
     if (index > 0) {
       setIndex(index - 1);
+      setCurrentWordIndex(currentWordIndex - 1);
     }
   };
 
@@ -70,9 +87,11 @@ const App = () => {
         onReturnClick={handleReturnClick}
         onCheckboxChange={handleCheckboxChange}
         isChecked={isChecked}
+        currentWord={currentWord}
       />
     </div>
   );
 };
 
 export default App;
+
