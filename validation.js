@@ -56,9 +56,26 @@ function App() {
     setimageIndex(imageIndex + 1);
   };
 
+  //finish target selection text area code
+  const [showTextArea, setShowTextArea] = useState(false);
+  const [text, setText] = useState("");
+
   useEffect(() => {
-    console.log(imageIndex + 1);
-    fetch(`./mock_datas/pg${imageIndex + 1}_mock_data.json`)
+    if (showTextArea) {
+      document.getElementById("textarea").focus();
+    }
+  }, [showTextArea]);
+
+  const handleConfirmTextAreaClick = () => {
+    console.log(
+      `Target_name: ${targetNames[targetIndex]}\n Write Text: ${text}`
+    );
+    setShowTextArea(false);
+  };
+
+  //finish target selection text area code
+  useEffect(() => {
+    fetch(`./mock_datas/pg1_mock_data.json`)
       .then((res) => res.json())
       .then((json) => {
         setBlocks(json.blocks);
@@ -157,6 +174,36 @@ function App() {
       }}
     >
       <button onClick={handleSelect}>Select</button>
+      <button
+        onClick={() => {
+          setShowConfirm(false);
+          setShowTextArea(true);
+        }}
+      >
+        Finish target selection
+      </button>
+      {showTextArea && (
+        <div
+          onClick={() => {
+            setShowConfirm(false);
+          }}
+        >
+          <textarea
+            id="textarea"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Type in the exact values if you want"
+          />
+          <button
+            onClick={() => {
+              handleConfirmTextAreaClick(true);
+              handleNextTarget(true);
+            }}
+          >
+            Confirm
+          </button>
+        </div>
+      )}
       <div
         style={{
           display: "flex",
@@ -207,7 +254,6 @@ function App() {
             setShowRect(false);
             setShowConfirm(false);
             setIsMouseOverConfirmButton(false);
-            handleNextTarget(true);
           }}
           onMouseEnter={() => setIsMouseOverConfirmButton(true)}
           onMouseLeave={() => setIsMouseOverConfirmButton(false)}
@@ -241,3 +287,4 @@ function App() {
 }
 
 export default App;
+
