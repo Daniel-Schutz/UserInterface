@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
+/*import saveAs is is needed to generate the output JSON.  
+To use it, you need to download the "file-saver" dependency*/
 import { saveAs } from "file-saver";
 
+/*this part is to get the images. 
+Later we will get the images by reading a JSON*/
 import image1 from "./Images/Slip1.jpg";
 import image2 from "./Images/Slip 1-2.jpg";
 import image3 from "./Images/Slip 1-3.jpg";
@@ -24,6 +28,8 @@ function App() {
   const [blocks, setBlocks] = useState([]);
   const [data, setData] = useState([]);
 
+  /*this part is to get the images as well. 
+Later we will get the images by reading a JSON*/
   const images = [
     image1,
     image2,
@@ -39,8 +45,8 @@ function App() {
     image12
   ];
 
+  //We will get the target names by reading a JSON too
   const targetNames = ["name1", "name2", "name3"];
-
   const [targetIndex, setTargetIndex] = useState(0);
 
   const handleNextTarget = () => {
@@ -49,6 +55,7 @@ function App() {
     }
   };
 
+  //This is the number of the page
   const [imageIndex, setimageIndex] = useState(0);
 
   const handlePrev = () => {
@@ -59,7 +66,7 @@ function App() {
     setimageIndex(imageIndex + 1);
   };
 
-  //finish target selection text area code
+  //text area that appears after finishing the selection
   const [showTextArea, setShowTextArea] = useState(false);
   const [text, setText] = useState("");
 
@@ -85,9 +92,9 @@ function App() {
     setShowTextArea(false);
   };
 
-  //finish target selection text area code
+  //to read the mock data
   useEffect(() => {
-    fetch(`./mock_datas/pg1_mock_data.json`)
+    fetch(`./pg1_mock_data.json`)
       .then((res) => res.json())
       .then((json) => {
         setBlocks(json.blocks);
@@ -110,7 +117,7 @@ function App() {
         excerpt.push(block.Id);
       }
     });
-
+    //newData and Data are the outpui information
     const newData = {
       Target_name: `${targetNames[targetIndex]}`,
       Text: `${filtered.join(" ")}`,
@@ -125,6 +132,8 @@ function App() {
     );
   };
 
+  //handleSelect, handleMouseDown, handleMouseUp and handleConfirm
+  //are to create the highlighted area
   const handleSelect = () => {
     setShowRect(false);
     setShowConfirm(false);
@@ -311,6 +320,8 @@ function App() {
       >
         Next Page
       </button>
+      {/* Temporary button just to test, the json will be created
+      after the validation be completed */}
       <button
         onClick={() => {
           createJson(true);
@@ -324,4 +335,3 @@ function App() {
 }
 
 export default App;
-
