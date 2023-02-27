@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { saveAs } from "file-saver";
+
 import image1 from "./Images/Slip1.jpg";
 import image2 from "./Images/Slip 1-2.jpg";
 import image3 from "./Images/Slip 1-3.jpg";
@@ -20,6 +22,7 @@ function App() {
     false
   );
   const [blocks, setBlocks] = useState([]);
+  const [data, setData] = useState([]);
 
   const images = [
     image1,
@@ -67,9 +70,18 @@ function App() {
   }, [showTextArea]);
 
   const handleConfirmTextAreaClick = () => {
-    console.log(
-      `Target_name: ${targetNames[targetIndex]}\n Write Text: ${text}`
-    );
+    if (text !== "") {
+      const newData = {
+        Target_name: `${targetNames[targetIndex]}`,
+        WriteText: `${text}`
+      };
+      setData([...data, newData]);
+      console.log(
+        `Target_name: ${targetNames[targetIndex]}\n Write Text: ${text}`
+      );
+      setText("");
+    }
+
     setShowTextArea(false);
   };
 
@@ -98,6 +110,14 @@ function App() {
         excerpt.push(block.Id);
       }
     });
+
+    const newData = {
+      Target_name: `${targetNames[targetIndex]}`,
+      Text: `${filtered.join(" ")}`,
+      Excercpt: `${excerpt}`
+    };
+    setData([...data, newData]);
+
     console.log(
       `Target_name: ${targetNames[targetIndex]}\n Text: ${filtered.join(
         " "
@@ -154,6 +174,14 @@ function App() {
     setShowConfirm(false);
   };
 
+  //code to save as a JSON
+  const createJson = () => {
+    const blob = new Blob([JSON.stringify(data)], {
+      type: "application/json;charset=utf-8"
+    });
+    saveAs(blob, "dados.json");
+  };
+
   return (
     <div
       className="image"
@@ -175,6 +203,7 @@ function App() {
     >
       <button onClick={handleSelect}>Select</button>
       <button
+        style={{ margin: "2px" }}
         onClick={() => {
           setShowConfirm(false);
           setShowTextArea(true);
@@ -281,6 +310,14 @@ function App() {
         disabled={imageIndex === images.length - 1}
       >
         Next Page
+      </button>
+      <button
+        onClick={() => {
+          createJson(true);
+          setShowConfirm(false);
+        }}
+      >
+        Download data as JSON
       </button>
     </div>
   );
