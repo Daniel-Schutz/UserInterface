@@ -109,6 +109,7 @@ Later we will get the images by reading a JSON*/
         type: "application/json;charset=utf-8"
       });
       saveAs(blob, "dados.json");
+      //window.close()
     }
 
     setShowTextArea(false);
@@ -209,20 +210,75 @@ Later we will get the images by reading a JSON*/
   //codigo quadrado
   const [boxIndex, setBoxIndex] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
+
+  //here is the part that is wrong
+  useEffect(() => {
+    let boxess = [];
+    extractionExcerpts.forEach((excerpt) => {
+      if (excerpt.length === 1) {
+        let start = excerpt[0];
+        blocks.forEach((block) => {
+          if (block.Id === start) {
+            const newBox = {
+              x: `${block.start[0] * 600 - 3}`,
+              y: `${block.start[1] * 800 - 3}`,
+              width: `${block.end[0] * 600 - block.start[0] * 600 + 8}`,
+              height: `${block.end[1] * 800 - block.start[1] * 800 + 8}`
+            };
+            boxess.push(newBox);
+            return;
+          }
+        });
+      } else if (excerpt.length !== 1) {
+        let start = excerpt[0];
+        let end = excerpt[excerpt.length - 1];
+        let temporaryX;
+        let temporaryY;
+        let temporaryWidth;
+        let temporaryHeight;
+        blocks.forEach((block) => {
+          if (block.Id === start) {
+            temporaryX = `${block.start[0] * 600 - 3}`;
+            temporaryY = `${block.start[1] * 800 - 3}`;
+          } else if (block.Id === end) {
+            temporaryWidth = `${block.end[0] * 600 - temporaryX + 10}`;
+            temporaryHeight = `${
+              block.end[1] * 800 - block.start[1] * 800 + 15
+            }`;
+          }
+        });
+        const newBox = {
+          x: `${temporaryX}`,
+          y: `${temporaryY}`,
+          width: `${temporaryWidth}`,
+          height: `${temporaryHeight}`
+        };
+        boxess.push(newBox);
+
+        return;
+      }
+    });
+    console.log(boxess);
+  }, []);
+
+  //this is the boxes that I'm using while the other is not working
   const boxes = [
-    { x: 10, y: 250, width: 200, height: 100 },
-    { x: 10, y: 400, width: 200, height: 100 },
-    { x: 10, y: 250, width: 200, height: 100 },
-    { x: 10, y: 250, width: 200, height: 100 },
-    { x: 10, y: 250, width: 200, height: 100 },
-    { x: 10, y: 250, width: 200, height: 100 }
+    {
+      x: 84.14322745800018,
+      y: 140.11190843582153,
+      width: 207.5997267961502,
+      height: 22.618963718414307
+    },
+    { x: 65, y: 160, width: 110, height: 22 },
+    { x: 335, y: 160, width: 50, height: 22 },
+    { x: 120, y: 470, width: 110, height: 22 },
+    { x: 10, y: 250, width: 200, height: 22 },
+    { x: 160.75, y: 552.36, width: 23.79, height: 22 }
   ];
 
   const currentBox = boxes[boxIndex];
   const x = currentBox.x;
   const y = currentBox.y;
-  const width = currentBox.width;
-  const height = currentBox.height;
 
   const handleNextClick = () => {
     if (isChecked && targetIndex < targetNames.length - 1) {
@@ -244,6 +300,7 @@ Later we will get the images by reading a JSON*/
         type: "application/json;charset=utf-8"
       });
       saveAs(blob, "dados.json");
+      //window.close()
     }
   };
 
@@ -251,6 +308,7 @@ Later we will get the images by reading a JSON*/
     if (boxIndex > 0) {
       setBoxIndex(boxIndex - 1);
       setTargetIndex(targetIndex - 1);
+      data.pop();
     }
   };
 
@@ -261,8 +319,8 @@ Later we will get the images by reading a JSON*/
   //code of the quadrado
   const rectangleStyle = {
     position: "absolute",
-    left: x,
-    top: y - height - 50,
+    left: boxes[boxIndex].x,
+    top: boxes[boxIndex].y - 150,
     width: 200,
     height: 100,
     backgroundColor: "yellow",
@@ -297,12 +355,13 @@ if (isHidden) {
   };
 
   //code of the outline box
+
   const boxStyle = {
     position: "absolute",
     left: x,
     top: y,
-    width: 600,
-    height: 60,
+    width: boxes[boxIndex].width,
+    height: boxes[boxIndex].height,
     border: "2px solid yellow"
   };
 
