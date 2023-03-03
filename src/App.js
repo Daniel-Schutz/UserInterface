@@ -492,6 +492,7 @@ if (isHidden) {
                   handleNextTarget(true);
                   setIsVisible(true);
                   setIsValidationVisible(false);
+                  setBoxIndex(boxIndex + 1);
                 }}
               >
                 Confirm
