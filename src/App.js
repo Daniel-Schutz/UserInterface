@@ -2,22 +2,23 @@ import React, { useState, useEffect } from "react";
 /*import saveAs is is needed to generate the output JSON.  
 To use it, you need to download the "file-saver" dependency*/
 import { saveAs } from "file-saver";
-import json from "/public/pg1_mock_data.json";
+import json from "/public/new_mock_data.json";
+import "./styles.css";
 
 /*this part is to get the images. 
 Later we will get the images by reading a JSON*/
-import image1 from "./Images/Slip1.jpg";
-import image2 from "./Images/Slip 1-2.jpg";
-import image3 from "./Images/Slip 1-3.jpg";
-import image4 from "./Images/Slip 1-4.jpg";
-import image5 from "./Images/Slip 1-5.jpg";
-import image6 from "./Images/Slip 1-6.jpg";
-import image7 from "./Images/Slip 1-7.jpg";
-import image8 from "./Images/Slip 1-8.jpg";
-import image9 from "./Images/Slip 1-9.jpg";
-import image10 from "./Images/Slip 1-10.jpg";
-import image11 from "./Images/Slip 1-11.jpg";
-import image12 from "./Images/Slip 1-12.jpg";
+import image1 from "./Images/Slip1-1.jpg";
+import image2 from "./Images/Slip1-2.jpg";
+import image3 from "./Images/Slip1-3.jpg";
+import image4 from "./Images/Slip1-4.jpg";
+import image5 from "./Images/Slip1-5.jpg";
+import image6 from "./Images/Slip1-6.jpg";
+import image7 from "./Images/Slip1-7.jpg";
+import image8 from "./Images/Slip1-8.jpg";
+import image9 from "./Images/Slip1-9.jpg";
+import image10 from "./Images/Slip1-10.jpg";
+import image11 from "./Images/Slip1-11.jpg";
+import image12 from "./Images/Slip1-12.jpg";
 
 function App() {
   const [rect, setRect] = useState({ x: 0, y: 0, width: 0, height: 0 });
@@ -57,6 +58,17 @@ Later we will get the images by reading a JSON*/
     if (targetIndex < targetNames.length - 1) {
       setTargetIndex(targetIndex + 1);
     }
+    for (let i = 0; i < blocks.length; i++) {
+      blocks[i].forEach((block) => {
+        //console.log(extractionExcerpts[targetIndex + 1][0]);
+        if (extractionExcerpts[targetIndex + 1][0] === block.Id) {
+          setimageIndex(block.page_num - 1);
+          console.log("entrou2");
+        }
+      });
+    }
+
+    //procurar a primeira palavra do target e achar a pagina
   };
 
   //This is the number of the page
@@ -105,6 +117,7 @@ Later we will get the images by reading a JSON*/
         );
         setText("");
       }
+
       const blob = new Blob([JSON.stringify(data)], {
         type: "application/json;charset=utf-8"
       });
@@ -121,7 +134,7 @@ Later we will get the images by reading a JSON*/
   const filterText = (firstCoordinatePair, secondCoordinatePair) => {
     let filtered = [];
     let excerpt = [];
-    blocks.forEach((block) => {
+    blocks[imageIndex].forEach((block) => {
       let start = block.start;
       let end = block.end;
       if (
@@ -160,9 +173,6 @@ Later we will get the images by reading a JSON*/
     setShowConfirm(false);
     setRect({ x: 0, y: 0, width: 0, height: 0 });
     setShowRect(true);
-  };
-  const handleStart = () => {
-    setShowSelect(true);
   };
 
   const handleMouseDown = (e) => {
@@ -210,8 +220,8 @@ Later we will get the images by reading a JSON*/
   //codigo quadrado
   const [boxIndex, setBoxIndex] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
-
-  //here is the part that is wrong
+  /*
+ 
   useEffect(() => {
     let boxess = [];
     extractionExcerpts.forEach((excerpt) => {
@@ -259,7 +269,7 @@ Later we will get the images by reading a JSON*/
       }
     });
     console.log(boxess);
-  }, []);
+  }, []);*/
 
   //this is the boxes that I'm using while the other is not working
   const boxes = [
@@ -326,7 +336,8 @@ Later we will get the images by reading a JSON*/
     backgroundColor: "yellow",
     padding: 20,
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
+    borderRadius: "8%"
   };
 
   const [showDescription, setShowDescription] = useState(false);
@@ -392,7 +403,10 @@ if (isHidden) {
               className="line1"
               style={{ display: "flex", flexWrap: "nowrap" }}
             >
-              <div className="target-name" style={{ margin: "0 10px" }}>
+              <div
+                className="target-name"
+                style={{ margin: "0 10px", fontSize: "25px" }}
+              >
                 {targetNames[targetIndex]}
               </div>
               <div
@@ -406,7 +420,7 @@ if (isHidden) {
                     border: "1px solid black",
                     borderRadius: "50%",
                     color: "black",
-                    fontSize: "12px",
+                    fontSize: "18px",
                     cursor: "pointer"
                   }}
                 >
@@ -424,11 +438,14 @@ if (isHidden) {
             <style>
               {`.checkbox-container {
                 margin-top:20px;
-                margin-bottom:20px;
+                margin-bottom:10px;
 
             }`}
             </style>
-            <div className="checkbox-container">
+            <div
+              className="checkbox-container"
+              style={{ margin: "10px 0px", fontSize: "18px" }}
+            >
               <input
                 type="checkbox"
                 onChange={handleCheckboxChange}
@@ -436,11 +453,13 @@ if (isHidden) {
               />
               <label>Validate or </label>
               <button
+                className="select"
                 onClick={() => {
-                  handleStart(true);
+                  setShowSelect(true);
                   setShowConfirm(false);
                   setIsVisible(false);
                   setIsValidationVisible(true);
+                  handleSelect(true);
                 }}
               >
                 Select
@@ -450,13 +469,16 @@ if (isHidden) {
             <style>
               {`.bottom-buttons-container {
                  display: flex;
-                 justify-content: space-between;           
-                 margin-top:10px;                
+                 justify-content: space-between;                         
             }`}
             </style>
             <div className="bottom-buttons-container">
-              <button onClick={handleReturnClick}>Return</button>
-              <button onClick={handleNextClick}>Next</button>
+              <button className="btn first" onClick={handleReturnClick}>
+                Return
+              </button>
+              <button className="btn first" onClick={handleNextClick}>
+                Next
+              </button>
             </div>
           </div>
         </div>
@@ -464,35 +486,74 @@ if (isHidden) {
 
       {showSelect && isValidationVisible && (
         <div>
-          <button onClick={handleSelect}>Select</button>
-          <button
-            style={{ margin: "2px" }}
-            onClick={() => {
-              setShowConfirm(false);
-              setShowTextArea(true);
+          <div> {imageIndex + 1}/12</div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center"
             }}
           >
-            Finish target selection
-          </button>
+            <p
+              style={{
+                position: "absolute",
+                top: " 0",
+                display: "flex",
+                justifyContent: "center",
+                margin: "0 auto",
+                fontSize: "25px",
+                width: "300px",
+                height: "50px",
+                backgroundColor: "white"
+              }}
+            >
+              Target Name: {targetNames[targetIndex]}
+            </p>
+            <button
+              className="finish-selection"
+              onClick={() => {
+                setShowConfirm(false);
+                setShowTextArea(true);
+                handleSelect(false);
+              }}
+            >
+              Finish target selection
+            </button>
+          </div>
+
           {showTextArea && (
             <div
+              style={{
+                top: " 0",
+                left: "0",
+                marginTop: "50px",
+                fontSize: "25px",
+                width: "300px",
+                height: "50px",
+                backgroundColor: "white"
+              }}
               onClick={() => {
                 setShowConfirm(false);
               }}
             >
               <textarea
+                style={{ height: "50px" }}
                 id="textarea"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="Type in the exact values if you want"
+                placeholder="Type in the exact values if you want or just confirm"
+                onClick={() => {
+                  handleSelect(false);
+                }}
               />
               <button
+                className="textarea-confirm"
                 onClick={() => {
                   handleConfirmTextAreaClick(true);
                   handleNextTarget(true);
                   setIsVisible(true);
                   setIsValidationVisible(false);
                   setBoxIndex(boxIndex + 1);
+                  setShowConfirm(false);
                 }}
               >
                 Confirm
@@ -505,22 +566,7 @@ if (isHidden) {
               justifyContent: "center",
               margin: "10px"
             }}
-          >
-            <div> {imageIndex + 1}/12</div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                margin: "0 auto",
-                fontSize: "25px",
-                width: "300px",
-                height: "50px",
-                backgroundColor: "white"
-              }}
-            >
-              Target Name: {targetNames[targetIndex]}
-            </div>
-          </div>
+          ></div>
 
           {showRect && (
             <div
@@ -538,6 +584,7 @@ if (isHidden) {
           )}
           {showConfirm && (
             <button
+              className="textarea-confirm"
               style={{
                 position: "absolute",
                 left: rect.x + rect.width - 70,
@@ -549,6 +596,7 @@ if (isHidden) {
                 setShowRect(false);
                 setShowConfirm(false);
                 setIsMouseOverConfirmButton(false);
+                handleSelect(true);
               }}
               onMouseEnter={() => setIsMouseOverConfirmButton(true)}
               onMouseLeave={() => setIsMouseOverConfirmButton(false)}
@@ -557,7 +605,13 @@ if (isHidden) {
             </button>
           )}
           <button
-            style={{ position: "absolute", top: "730px", left: "10px" }}
+            className="btn first"
+            style={{
+              position: "absolute",
+              top: "730px",
+              left: "10px",
+              backgroundColor: "white"
+            }}
             onClick={() => {
               handlePrev(true);
               setShowConfirm(false);
@@ -568,7 +622,13 @@ if (isHidden) {
           </button>
 
           <button
-            style={{ position: "absolute", top: "730px", left: "450px" }}
+            className="btn first"
+            style={{
+              position: "absolute",
+              top: "730px",
+              left: "450px",
+              backgroundColor: "white"
+            }}
             onClick={() => {
               handleNext(true);
               setShowConfirm(false);
@@ -584,3 +644,4 @@ if (isHidden) {
 }
 
 export default App;
+
