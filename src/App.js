@@ -19,8 +19,40 @@ import image9 from "./Images/Slip1-9.jpg";
 import image10 from "./Images/Slip1-10.jpg";
 import image11 from "./Images/Slip1-11.jpg";
 import image12 from "./Images/Slip1-12.jpg";
+import image13 from "./Images/Slip1-13.jpg";
+import image14 from "./Images/Slip1-14.jpg";
+import console from "console";
 
 function App() {
+  /*
+  const fs = require("fs");
+  const path = require("path");
+
+  const pasta = "src/Images"; // substitua pelo caminho da sua pasta
+  const listaDeImagens = []; // cria uma lista global vazia
+
+  fs.readdir(pasta, (err, arquivos) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    arquivos.forEach((arquivo) => {
+      const caminhoCompleto = path.join(pasta, arquivo);
+      const extensao = path.extname(arquivo).toLowerCase();
+      if (
+        extensao === ".jpg" ||
+        extensao === ".jpeg" ||
+        extensao === ".png" ||
+        extensao === ".gif"
+      ) {
+        listaDeImagens.push(caminhoCompleto); // adiciona o caminho completo à lista global
+      }
+    });
+  });
+  console.log(listaDeImagens);
+*/
+
   const [rect, setRect] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const [showRect, setShowRect] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -44,7 +76,9 @@ Later we will get the images by reading a JSON*/
     image9,
     image10,
     image11,
-    image12
+    image12,
+    image13,
+    image14
   ];
 
   //We will get the target names by reading a JSON too
@@ -486,7 +520,10 @@ if (isHidden) {
 
       {showSelect && isValidationVisible && (
         <div>
-          <div> {imageIndex + 1}/12</div>
+          <div>
+            {" "}
+            {imageIndex + 1}/{images.length}
+          </div>
           <div
             style={{
               display: "flex",
@@ -644,4 +681,5 @@ if (isHidden) {
 }
 
 export default App;
+
 
