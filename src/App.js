@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 To use it, you need to download the "file-saver" dependency*/
 import { saveAs } from "file-saver";
 import json from "/public/new_mock_data.json";
-import "./styles.css";
+import "./App.css";
 
 /*this part is to get the images. 
 Later we will get the images by reading a JSON*/
@@ -21,24 +21,22 @@ import image11 from "./Images/Slip1-11.jpg";
 import image12 from "./Images/Slip1-12.jpg";
 import image13 from "./Images/Slip1-13.jpg";
 import image14 from "./Images/Slip1-14.jpg";
-import console from "console";
 
 function App() {
-  /*
   const fs = require("fs");
   const path = require("path");
 
-  const pasta = "src/Images"; // substitua pelo caminho da sua pasta
-  const listaDeImagens = []; // cria uma lista global vazia
+  const directory = "src/Images"; // substitua pelo caminho da sua directory
+  const imagesList = [];
 
-  fs.readdir(pasta, (err, arquivos) => {
+  fs.readdir(directory, (err, arquivos) => {
     if (err) {
       console.error(err);
       return;
     }
 
     arquivos.forEach((arquivo) => {
-      const caminhoCompleto = path.join(pasta, arquivo);
+      const completePath = path.join(directory, arquivo);
       const extensao = path.extname(arquivo).toLowerCase();
       if (
         extensao === ".jpg" ||
@@ -46,12 +44,11 @@ function App() {
         extensao === ".png" ||
         extensao === ".gif"
       ) {
-        listaDeImagens.push(caminhoCompleto); // adiciona o caminho completo à lista global
+        imagesList.push(completePath); // adiciona o caminho completo à lista global
       }
     });
   });
-  console.log(listaDeImagens);
-*/
+  //console.log(imagesList);
 
   const [rect, setRect] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const [showRect, setShowRect] = useState(false);
@@ -85,24 +82,15 @@ Later we will get the images by reading a JSON*/
   const targetNames = json.extraction.map((item) => item.target_name);
   const extractionTexts = json.extraction.map((item) => item.text);
   const extractionExcerpts = json.extraction.map((item) => item.excerpt);
+  const targetPageNum = json.extraction.map((item) => item.page_num);
 
   const [targetIndex, setTargetIndex] = useState(0);
 
   const handleNextTarget = () => {
     if (targetIndex < targetNames.length - 1) {
       setTargetIndex(targetIndex + 1);
+      setimageIndex(targetPageNum[targetIndex] - 1);
     }
-    for (let i = 0; i < blocks.length; i++) {
-      blocks[i].forEach((block) => {
-        //console.log(extractionExcerpts[targetIndex + 1][0]);
-        if (extractionExcerpts[targetIndex + 1][0] === block.Id) {
-          setimageIndex(block.page_num - 1);
-          console.log("entrou2");
-        }
-      });
-    }
-
-    //procurar a primeira palavra do target e achar a pagina
   };
 
   //This is the number of the page
@@ -212,21 +200,19 @@ Later we will get the images by reading a JSON*/
   const handleMouseDown = (e) => {
     if (!isMouseOverConfirmButton) {
       setRect({ x: e.clientX, y: e.clientY, width: 0, height: 0 });
+      setShowRect(false);
     }
   };
 
   const handleMouseUp = (e) => {
+    setShowRect(true);
     if (!isMouseOverConfirmButton) {
       let width = e.clientX - rect.x;
       let height = e.clientY - rect.y;
-      if (width < 0) {
-        width = -width;
-        setRect({
-          x: rect.x - width,
-          y: rect.y,
-          width,
-          height
-        });
+      if (width <= 0) {
+        setRect(false);
+        setShowRect(false);
+        setShowConfirm(false);
       } else {
         setRect({
           x: rect.x,
@@ -234,8 +220,8 @@ Later we will get the images by reading a JSON*/
           width,
           height
         });
+        setShowConfirm(true);
       }
-      setShowConfirm(true);
     }
   };
 
@@ -254,55 +240,26 @@ Later we will get the images by reading a JSON*/
   //codigo quadrado
   const [boxIndex, setBoxIndex] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
-  /*
- 
-  useEffect(() => {
-    let boxess = [];
-    extractionExcerpts.forEach((excerpt) => {
-      if (excerpt.length === 1) {
-        let start = excerpt[0];
-        blocks.forEach((block) => {
-          if (block.Id === start) {
-            const newBox = {
-              x: `${block.start[0] * 600 - 3}`,
-              y: `${block.start[1] * 800 - 3}`,
-              width: `${block.end[0] * 600 - block.start[0] * 600 + 8}`,
-              height: `${block.end[1] * 800 - block.start[1] * 800 + 8}`
-            };
-            boxess.push(newBox);
-            return;
-          }
-        });
-      } else if (excerpt.length !== 1) {
-        let start = excerpt[0];
-        let end = excerpt[excerpt.length - 1];
-        let temporaryX;
-        let temporaryY;
-        let temporaryWidth;
-        let temporaryHeight;
-        blocks.forEach((block) => {
-          if (block.Id === start) {
-            temporaryX = `${block.start[0] * 600 - 3}`;
-            temporaryY = `${block.start[1] * 800 - 3}`;
-          } else if (block.Id === end) {
-            temporaryWidth = `${block.end[0] * 600 - temporaryX + 10}`;
-            temporaryHeight = `${
-              block.end[1] * 800 - block.start[1] * 800 + 15
-            }`;
-          }
-        });
-        const newBox = {
-          x: `${temporaryX}`,
-          y: `${temporaryY}`,
-          width: `${temporaryWidth}`,
-          height: `${temporaryHeight}`
-        };
-        boxess.push(newBox);
 
-        return;
+  /*const boxess = [];
+  console.log(extractionExcerpts);
+
+  useEffect(() => {
+    for (let i = 0; i < extractionExcerpts.length; i++) {
+      //console.log(extractionExcerpts);
+      if (extractionExcerpts[i].length === 1) {
+        
+        let current = extractionExcerpts[i].shift();
+        blocks[targetPageNum[i] - 1].forEach((block) => {
+          //console.log(current)
+          if (current === block.Id) {
+            console.log("entrou");
+          }
+        });
       }
-    });
-    console.log(boxess);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);*/
 
   //this is the boxes that I'm using while the other is not working
@@ -328,6 +285,7 @@ Later we will get the images by reading a JSON*/
     if (isChecked && targetIndex < targetNames.length - 1) {
       setBoxIndex(boxIndex + 1);
       setTargetIndex(targetIndex + 1);
+      setimageIndex(targetPageNum[targetIndex] - 1);
       setIsChecked(false);
       console.log(
         `Target_name: ${targetNames[targetIndex]}\n Text: ${extractionTexts[targetIndex]}\n\n  
@@ -352,7 +310,12 @@ Later we will get the images by reading a JSON*/
     if (boxIndex > 0) {
       setBoxIndex(boxIndex - 1);
       setTargetIndex(targetIndex - 1);
-      data.pop();
+      setimageIndex(targetPageNum[targetIndex] - 1);
+      while (
+        data[data.length - 1].Target_name === targetNames[targetIndex - 1]
+      ) {
+        data.pop();
+      }
     }
   };
 
@@ -493,7 +456,7 @@ if (isHidden) {
                   setShowConfirm(false);
                   setIsVisible(false);
                   setIsValidationVisible(true);
-                  handleSelect(true);
+                  handleSelect();
                 }}
               >
                 Select
@@ -521,7 +484,6 @@ if (isHidden) {
       {showSelect && isValidationVisible && (
         <div>
           <div>
-            {" "}
             {imageIndex + 1}/{images.length}
           </div>
           <div
@@ -538,7 +500,7 @@ if (isHidden) {
                 justifyContent: "center",
                 margin: "0 auto",
                 fontSize: "25px",
-                width: "300px",
+                width: "auto",
                 height: "50px",
                 backgroundColor: "white"
               }}
@@ -547,8 +509,7 @@ if (isHidden) {
             </p>
             <button
               className="finish-selection"
-              onClick={() => {
-                setShowConfirm(false);
+              onMouseDown={() => {
                 setShowTextArea(true);
                 handleSelect(false);
               }}
@@ -568,9 +529,6 @@ if (isHidden) {
                 height: "50px",
                 backgroundColor: "white"
               }}
-              onClick={() => {
-                setShowConfirm(false);
-              }}
             >
               <textarea
                 style={{ height: "50px" }}
@@ -578,19 +536,15 @@ if (isHidden) {
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Type in the exact values if you want or just confirm"
-                onClick={() => {
-                  handleSelect(false);
-                }}
               />
               <button
                 className="textarea-confirm"
-                onClick={() => {
+                onMouseDown={() => {
                   handleConfirmTextAreaClick(true);
                   handleNextTarget(true);
                   setIsVisible(true);
                   setIsValidationVisible(false);
                   setBoxIndex(boxIndex + 1);
-                  setShowConfirm(false);
                 }}
               >
                 Confirm
@@ -631,7 +585,6 @@ if (isHidden) {
                 handleConfirm(true);
                 setRect({ x: 0, y: 0, width: 0, height: 0 });
                 setShowRect(false);
-                setShowConfirm(false);
                 setIsMouseOverConfirmButton(false);
                 handleSelect(true);
               }}
@@ -651,7 +604,6 @@ if (isHidden) {
             }}
             onClick={() => {
               handlePrev(true);
-              setShowConfirm(false);
             }}
             disabled={imageIndex === 0}
           >
@@ -668,7 +620,6 @@ if (isHidden) {
             }}
             onClick={() => {
               handleNext(true);
-              setShowConfirm(false);
             }}
             disabled={imageIndex === images.length - 1}
           >
