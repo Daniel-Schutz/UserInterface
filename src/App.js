@@ -23,26 +23,41 @@ import image13 from "./Images/Slip1-13.jpg";
 import image14 from "./Images/Slip1-14.jpg";
 
 function App() {
+  /*useEffect(() => {
+    axios
+      .get("./new_mock_data.json")
+      .then(function (response) {
+        // handle success
+        const extraction = response.data.extraction;
+        const targetNames = extraction.map((item) => item.target_name);
+        console.log(targetNames);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);*/
+  const imagesList = [];
   const fs = require("fs");
   const path = require("path");
 
   const directory = "src/Images"; // substitua pelo caminho da sua directory
-  const imagesList = [];
 
-  fs.readdir(directory, (err, arquivos) => {
+  fs.readdir(directory, (err, files) => {
     if (err) {
       console.error(err);
       return;
     }
 
-    arquivos.forEach((arquivo) => {
-      const completePath = path.join(directory, arquivo);
-      const extensao = path.extname(arquivo).toLowerCase();
+    files.forEach((file) => {
+      const completePath = path.join(directory, file);
+      const extension = path.extname(file).toLowerCase();
       if (
-        extensao === ".jpg" ||
-        extensao === ".jpeg" ||
-        extensao === ".png" ||
-        extensao === ".gif"
+        extension === ".jpg" ||
+        extension === ".jpeg" ||
+        extension === ".png" ||
+        extension === ".gif"
       ) {
         imagesList.push(completePath); // adiciona o caminho completo à lista global
       }
@@ -241,37 +256,98 @@ Later we will get the images by reading a JSON*/
   const [boxIndex, setBoxIndex] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
 
-  /*const boxess = [];
-  console.log(extractionExcerpts);
+  const boxess = [];
+  //as vezes quando atualiza some as informações desse array debaixo
 
   useEffect(() => {
     for (let i = 0; i < extractionExcerpts.length; i++) {
-      //console.log(extractionExcerpts);
+      //if is onçy one word on this target extraction
       if (extractionExcerpts[i].length === 1) {
-        
-        let current = extractionExcerpts[i].shift();
+        //console.log(extractionExcerpts[i][0]);
+        let current = extractionExcerpts[i][0];
+
         blocks[targetPageNum[i] - 1].forEach((block) => {
-          //console.log(current)
           if (current === block.Id) {
-            console.log("entrou");
+            let newBox = [
+              {
+                Id: current,
+                x: block.start[0] * 600,
+                y: block.start[1] * 800 - 5,
+                width: (block.end[0] - block.start[0]) * 600 + 20,
+                height: (block.end[1] - block.start[1]) * 800 + 20
+              }
+            ];
+            boxess.push(newBox);
           }
         });
+      } else {
+        //if is more than 1 word
+        let sameLine = true;
+        let current = extractionExcerpts[i];
+        let firstX;
+        let firstY;
+        let lastX;
+        let lastY;
+
+        for (let y = 0; y < blocks[targetPageNum[i] - 1].length; y++) {
+          //if the first id of the exercpt === block.Id
+          if (current[0] === blocks[targetPageNum[i] - 1][y].Id) {
+            //saving the coordenates of the first word
+            firstX = blocks[targetPageNum[i] - 1][y].start[0] * 600 - 10;
+            //console.log(firstX);
+            firstY = blocks[targetPageNum[i] - 1][y].start[1] * 800 - 10;
+
+            for (let x = 0; x < current.length - 1; x++) {
+              //startX is the x coordenate of a word
+              let startX = blocks[targetPageNum[i] - 1][y + x].start[0];
+              //nextX is the x coordenate of the next word
+              let nextX = blocks[targetPageNum[i] - 1][y + x + 1].start[0];
+
+              //to save the final coordenates of the last word
+              if (x === current.length - 2) {
+                lastX =
+                  blocks[targetPageNum[i] - 1][y + x + 1].end[0] * 600 + 20;
+
+                lastY =
+                  blocks[targetPageNum[i] - 1][y + x + 1].end[1] * 800 + 20;
+              }
+
+              if (nextX < startX) {
+                sameLine = false;
+                //function to create another box and return that this happens
+              }
+            }
+          }
+        }
+        if (sameLine === true /*if it's just one box*/) {
+          let newBox = [
+            {
+              //arrumar o width/height
+              Id: current,
+              x: firstX,
+              y: firstY,
+              width: lastX - firstX,
+              height: lastY - firstY
+            }
+          ];
+          boxess.push(newBox);
+        }
       }
     }
-
+    console.log(boxess);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);*/
+  }, []);
 
   //this is the boxes that I'm using while the other is not working
   const boxes = [
     {
-      x: 84.14322745800018,
-      y: 140.11190843582153,
+      x: 77.14322745800018,
+      y: 133.11190843582153,
       width: 207.5997267961502,
-      height: 22.618963718414307
+      height: 40.618963718414307
     },
-    { x: 65, y: 160, width: 110, height: 22 },
-    { x: 335, y: 160, width: 50, height: 22 },
+    { x: 60, y: 160, width: 127, height: 38 },
+    { x: 330, y: 165, width: 58, height: 29 },
     { x: 120, y: 470, width: 110, height: 22 },
     { x: 10, y: 250, width: 200, height: 22 },
     { x: 160.75, y: 552.36, width: 23.79, height: 22 }
@@ -632,5 +708,6 @@ if (isHidden) {
 }
 
 export default App;
+
 
 
